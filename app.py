@@ -17,37 +17,28 @@ modules_collection = db.collection('packages')  # Replace 'modules' with your ac
 def query_modules(selected_types, properties_filters):
     results = []
 
-    query_ref = modules_collection
-
+    # Step 1: Fetch documents that match any of the selected types
     if selected_types:
-        query_ref = query_ref.where('types', 'array_contains_any', selected_types)
+        query_ref = modules_collection.where('types', 'array_contains_any', selected_types)
+        potential_matches = query_ref.stream()
 
-    # Execute the initial query
-    snapshot = query_ref.stream()
-    for doc in snapshot:
-        module = doc.to_dict()
+        # Step 2: Filter documents on the client side
+        for doc in potential_matches:
+            module = doc.to_dict()
+            module_types = set(module.get('types', []))
 
-        # Client-side filtering for voltage
-        voltage_min_satisfied = True
-        voltage_max_satisfied = True
+            # Check if module contains all selected types
+            if all(t in module_types for t in selected_types):
+                # Apply additional property filters (client-side)
+                matches_all_properties = True
+                for prop, value_range in properties_filters.items():
+                    # ... perform your range checks and set 'matches_all_properties' ...
+                    pass
 
-        if 'voltage' in properties_filters:
-            module_voltage_min = float(module.get('properties', {}).get('voltage', {}).get('min', 0))
-            module_voltage_max = float(module.get('properties', {}).get('voltage', {}).get('max', 0))
-            filter_min = properties_filters['voltage']['min']
-            filter_max = properties_filters['voltage']['max']
-
-            if filter_min is not None:
-                voltage_min_satisfied = filter_min <= module_voltage_min
-            if filter_max is not None:
-                voltage_max_satisfied = module_voltage_max <= filter_max
-
-        if voltage_min_satisfied and voltage_max_satisfied:
-            results.append(module)
+                if matches_all_properties:
+                    results.append(module)
 
     return results
-
-
 
 st.set_page_config(page_title='ato packages', layout='wide')
 
