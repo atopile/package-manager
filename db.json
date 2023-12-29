@@ -1,0 +1,72 @@
+{
+    "modules": [
+      {
+        "name": "PAM2401SCADJ",
+        "type": ["Regulator", "AdjustableRegulator", "BoostRegulator"],
+        "properties": {
+          "power_in": {
+            "voltage": {
+              "min": "0.9V",
+              "max": "4.75V"
+            }
+          },
+          "power_out": {
+            "voltage": {
+              "min": "2.5V",
+              "max": "5V"
+            },
+            "current": {
+              "min": "0A",
+              "max": "3A"
+            }
+          },
+          "switching_frequency": "1MHz"
+        }
+      },
+      {
+        "name": "LM317ADJ",
+        "type": ["Regulator", "AdjustableRegulator", "BoostRegulator"],
+        "properties": {
+          "power_in": {
+            "voltage": {
+              "min": "1.2V",
+              "max": "37V"
+            }
+          },
+          "power_out": {
+            "voltage": {
+              "min": "1.25V",
+              "max": "37V"
+            },
+            "current": {
+              "min": "0A",
+              "max": "1.5A"
+            }
+          }
+        }
+      },
+      {
+        "name": "TPS54331",
+        "type": ["BuckRegulator", "Regulator", "AdjustableRegulator"],
+        "properties": {
+          "power_in": {
+            "voltage": {
+              "min": "3.5V",
+              "max": "28V"
+            }
+          },
+          "power_out": {
+            "voltage": {
+              "min": "0.8V",
+              "max": "25V"
+            },
+            "current": {
+              "min": "0A",
+              "max": "3A"
+            }
+          },
+          "switching_frequency": "570kHz"
+        }
+      }
+    ]
+  }
