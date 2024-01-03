@@ -1,0 +1,116 @@
+
+
+module BoostReg:
+    power_in = new Power
+    power_out = new Power
+    # define behaviour
+    power_in.direction = "Input"
+    power_out.direction = "Output"
+
+module BuckReg:
+    power_in = new Power
+    power_out = new Power
+    # define behaviour
+    power_in.direction = "Input"
+    power_out.direction = "Output"
+
+module LDOReg:
+    power_in = new Power
+    power_out = new Power
+    # define behaviour
+    power_in.direction = "Input"
+    power_out.direction = "Output"
+
+    feedback_div = new ResistorDivider
+
+    eqn: power_out.voltage = power_in.voltage * feedback_div.r2 / (feedback_div.r1 + feedback_div.r2)
+
+module HighSideSwitch:
+    power_in = new Power
+    load = new Power
+    mosfet = new NFET
+    # define behaviour
+    power_in.direction = "Input"
+    power_out.direction = "Output"
+
+module TPS65313:
+    datasheet = "https://www.ti.com/lit/ds/symlink/tps65313-q1.pdf?ts=1703965026348&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTPS65313-Q1"
+    mpn = "TPS65313-Q1" # maybe modules should be able to have a part number? doent seem to make alot of sense for the ic to be given special treatment
+    buck1 = new BuckReg
+    buck1.power_in.voltage = 4V to 36V
+    buck1.power_out.voltage = 3.3V to 3.6V # technically 'or'
+    buck1.power_out.current = 0A to 3.1A
+    buck1.switching_frequency = 2MHz to 2.4MHz
+    buck1.soft_start = 1ms
+    buck2 = new BuckReg
+    buck2.power_in.voltage = 3.3V to 3.6V
+    buck2.power_out.voltage = 1.2V to 2.3V
+    buck2.power_out.current = 0A to 2A
+    buck2.switching_frequency = 2MHz to 2.4MHz
+    buck2.soft_start = 1ms
+    boost = new BoostReg
+    boost.power_in.voltage = 3.3V to 3.6V
+    boost.power_out.voltage = 5V +/- 0.3% # do we want to be able to specify min, typ, max?
+    boost.power_out.current = 0A to 600mA
+    boost.switching_frequency = 2MHz to 2.4MHz
+    boost.soft_start = 2ms
+
+module TPS65313:
+    datasheet = "https://www.ti.com/lit/ds/symlink/tps65313-q1.pdf?ts=1703965026348&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTPS65313-Q1"
+    mpn = "TPS65313-Q1" # maybe modules should be able to have a part number? doent seem to make alot of sense for the ic to be given special treatment
+    buck1 = new BuckReg
+    buck1.power_in.voltage = 4V to 36V
+    buck1.power_out.voltage = 3.3V to 3.6V # technically 'or'
+    buck1.power_out.current = 0A to 3.1A
+    buck1.switching_frequency = 2MHz to 2.4MHz
+    buck1.soft_start = 1ms
+    buck2 = new BuckReg
+    buck2.power_in.voltage = 3.3V to 3.6V
+    buck2.power_out.voltage = 1.2V to 2.3V
+    buck2.power_out.current = 0A to 2A
+    buck2.switching_frequency = 2MHz to 2.4MHz
+    buck2.soft_start = 1ms
+    boost = new BoostReg
+    boost.power_in.voltage = 3.3V to 3.6V
+    boost.power_out.voltage = 5V +/- 0.3% # do we want to be able to specify min, typ, max?
+    boost.power_out.current = 0A to 600mA
+    boost.switching_frequency = 2MHz to 2.4MHz
+    boost.soft_start = 2ms
+
+component TPS65310A_Q1:
+    signal vcc ~ pin 1
+    signal vcc1 ~ pin 2
+    signal ldo1_out ~ pin 3
+    signal ldo1_fb ~ pin 4
+    signal ldo2_out ~ pin 5
+    signal ldo2_fb ~ pin 6
+
+    footprint = "QFN-24-1EP_4x4mm_P0.5mm_EP2.9x2.9mm"
+    mpn = "TPS65310A-Q1"
+    lcsc = "C146622"
+
+module TPS65310A_Q1_kit:
+    datasheet = "https://www.ti.com/lit/ds/symlink/tps65310a-q1.pdf?ts=1703888188025"
+    ic = new TPS65310A_Q1
+
+    ldo = new LDOReg
+    ldo.power_in.vcc ~ ic.vcc1
+    ldo.power_in.gnd ~ ic.gnd
+    ldo.power_out.vcc ~ ic.ldo1_out
+    ldo.power_out.gnd ~ ic.gnd
+    ldo.feedback_div.Output ~ ic.ldo1_fb
+    ldo.power_in.voltage = 3V to 7V
+    ldo.power_out.voltage = 0.8V to 5.25V
+    ldo.power_out.current = 1mA to 350mA
+
+    buck1 = new BuckReg
+    buck1.power_in.vcc ~ ic.vcc
+    buck1.power_in.gnd ~ ic.gnd
+
+
+    buck2 = new BuckReg
+    buck3 = new BuckReg
+    boost = new BoostReg
+
+    led_driver = new HighSideSwitch
+
