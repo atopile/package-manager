@@ -1,25 +1,20 @@
+interface PowerOut from Power:
+    direction = "Output"
 
+interface PowerIn from Power:
+    direction = "Input"
 
 module BoostReg:
-    power_in = new Power
-    power_out = new Power
-    # define behaviour
-    power_in.direction = "Input"
-    power_out.direction = "Output"
+    in = new PowerIn
+    out = new PowerOut
 
 module BuckReg:
-    power_in = new Power
-    power_out = new Power
-    # define behaviour
-    power_in.direction = "Input"
-    power_out.direction = "Output"
+    in = new PowerIn
+    out = new PowerOut
 
 module LDOReg:
-    power_in = new Power
-    power_out = new Power
-    # define behaviour
-    power_in.direction = "Input"
-    power_out.direction = "Output"
+    in = new PowerIn
+    out = new PowerOut
 
     feedback_div = new ResistorDivider
 
@@ -33,9 +28,10 @@ module HighSideSwitch:
     power_in.direction = "Input"
     power_out.direction = "Output"
 
-module TPS65313:
+module TPS65313Kit:
     datasheet = "https://www.ti.com/lit/ds/symlink/tps65313-q1.pdf?ts=1703965026348&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTPS65313-Q1"
     mpn = "TPS65313-Q1" # maybe modules should be able to have a part number? doent seem to make alot of sense for the ic to be given special treatment
+    ic = new TPS65313
     buck1 = new BuckReg
     buck1.power_in.voltage = 4V to 36V
     buck1.power_out.voltage = 3.3V to 3.6V # technically 'or'
@@ -54,6 +50,27 @@ module TPS65313:
     boost.power_out.current = 0A to 600mA
     boost.switching_frequency = 2MHz to 2.4MHz
     boost.soft_start = 2ms
+
+    # connect ic to buck1
+    ic.power_in ~ buck1.power_in.vcc
+
+module MPU6050:
+    power_in = new PowerIn
+
+    ANY requres power_in
+
+    gyro = new Gyro
+
+    i2c = new I2C
+
+    gyro requires i2c or spi
+
+
+module LDO:
+    power_in = new PowerIn
+    power_out = new PowerOut
+
+    power_out requires power_in
 
 module TPS65313:
     datasheet = "https://www.ti.com/lit/ds/symlink/tps65313-q1.pdf?ts=1703965026348&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTPS65313-Q1"

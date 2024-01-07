@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore
 import pandas as pd
 
 # Path to your service account key
-service_account_path = 'atopile-880ca67acfe2.json'
+service_account_path = 'atopile-dacc978ae7cd.json'
 
 # Initialize Firestore
 if not firebase_admin._apps:  # Check if already initialized to prevent reinitialization
